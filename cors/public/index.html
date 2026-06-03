@@ -1,0 +1,30 @@
+<head>
+    <script>
+        function sendRequest() {
+            const a = document.getElementById('a').value;
+            const b = document.getElementById('b').value;
+
+            fetch('http://localhost:3000/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ a, b })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = `Result: ${data.result}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('response').innerText = 'An error occurred';
+            });
+        }
+    </script>
+    <body>
+        <input type="text" id="a" placeholder="Enter first number"> 
+        <input type="text" id="b" placeholder="Enter second number">
+        <button id="send">Send</button>
+        <div id="response"></div>
+    </body>
+</head>
