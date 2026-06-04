@@ -1,10 +1,13 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = 'RANDOM_TOKEN_SECRET';
 const app = express();
 app.use(express.json());
 
-function generateToken() {
-    return Math.random().toString(36).substr(2);
-}
+function generateToken(payload) {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+}       
+
 
 const memo = [];
 
@@ -30,9 +33,10 @@ app.post('/signup', (req, res) => {
     }
 
     if (founduser) {
-        const token = generateToken();
-        founduser.token = token;
-        res.json({ message: 'User signed in successfully', token });
+       const token=jwt.sign({username:username},JWT_SECRET,{expiresIn:'1h'});
+       res.json({ token: token });
+        //founduser.token = token;
+       
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -40,9 +44,11 @@ app.post('/signup', (req, res) => {
 //always put token in header
 
 app.get('/me', function (req, res) {
-    const token = req.headers['authorization'];
+   // const token = req.headers['authorization'];
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const username = decoded.username;
     for (let i = 0; i < memo.length; i++) {
-        if (memo[i].token === token) {
+        if (memo[i].username === username  ) {
             return res.json({ username: memo[i].username, password: memo[i].password });
         }
     }
