@@ -21,6 +21,8 @@ app.post("/signup",async function(req,res) {
 
 });
 app.post("/signin",async function(req,res){
+    const email =req.body.email;
+    const password=req.body.password;
     const user= await UserModel.findOne({
         email: email,
         password: password
@@ -45,10 +47,10 @@ app.todo("/todo",function(req,res){
 
 });
 function auth(req,res,next){
-    const token=req.header.token;
+    const token=req.headers.token;
     const decodedData= jwt.verify(token,JWT_SECRET);
     if(decodedData){
-        req.userID=decodedData.userID;
+        req.userID=decodedData.id;
         next();
     }else{
         res.json({
